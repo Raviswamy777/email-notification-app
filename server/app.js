@@ -43,7 +43,7 @@ app.post('/send-email', async (req, res) => {
            } else if (urgency === 'medium') {
             status = true;
              return  res.status(200).send(`Email scheduled to send in 1 hour`);
-           }else{
+           }else if(urgency === 'low'){
             status = true;
              return  res.status(200).send(`Email scheduled to send in 2 hour`);
            }
@@ -66,7 +66,6 @@ async function processQueue() {
     if (emailQueue.length === 0) return;
     const { to, subject, message } = emailQueue[0];
     try {
-        console.log(emailQueue[0]);
         
         await sendEmailBrevo(to, subject, message);
         console.log('Email sent successfully');
@@ -74,6 +73,7 @@ async function processQueue() {
         retryCount = 0; // Reset after successful send
     } catch (error) {
         retryCount++;
+        status = true
         await handleFailure(to, subject, message);
 
     }
